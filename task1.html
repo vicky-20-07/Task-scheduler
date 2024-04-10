@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task-Scheduler</title>
+</head>
+
+<body>
+    <div class="inner-body">
+        <header>
+            <p>TASK SCHEDULER</p>
+        </header>
+        <div class="body">
+            <div>
+                <form id="form">
+                    <div class="form">
+                        <div class="inner-form">
+                            <label for="select">Category</label>
+                            <select id="select">
+                                <option value="Work">Work</option>
+                                <option value="Personal space">Personal space</option>
+                            </select>
+                        </div>
+                        <div class="inner-form">
+                            <label for="sub-category">Sub-category</label>
+                            <input class="input" type="text" id="sub-category">
+                        </div>
+                        <div class="inner-form">
+                            <label for="duration">Duration</label>
+                            <input type="text" id="duration" style="display: none;" required>
+                            <div class="stopwatch">
+                                <div id="timer">00 : 00 : 00</div>
+                                <button id="start" type="button" onclick="watchFunction(event)">start</button>
+                                <button id="end" onclick="resetTimer()" type="button">end</button>
+                            </div>
+                        </div>
+                        <div class="inner-form">
+                            <label for="task">Task</label>
+                            <input class="input" type="text" id="task">
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="button" onclick="handleSubmit()">Add task</button>
+                        <button id="editButton" type="button" style="display: none;"
+                            onclick="updateSubmit()">Edit</button>
+                        <button type="button" onclick="clearForm()">Clear</button>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <div style="margin: 0 0 20px 20px;">
+                    <select id="filter" style="height: 50px; margin-top: 20px;" onchange="filterFunction()">
+                        <option value="All">All</option>
+                        <option value="Work">Work</option>
+                        <option value="Personal space">Personal space</option>
+                    </select>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Sub-category</th>
+                            <th>Duration</th>
+                            <th>Task</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+
+    let tableData = [];
+
+    function handleSubmit() {
+        var category = document.getElementById('select').value;
+        var subCategory = document.getElementById('sub-category').value;
+        var duration = document.getElementById('duration').value;
+        var task = document.getElementById('task').value;
+
+        if (category === 'Personal space' && (subCategory === '')) {
+            subCategory = '-';
+        }
+        if (category === 'Personal space' && (task === '')) {
+            task = '-';
+        }
+        if ((category === 'Work' && (subCategory === '' || task === '' || duration === '')) || (category === 'Personal space' && duration === '')) {
+            alert('Enter the details');
+            return;
+        }
+
+        var newRowData = {
+            category: category,
+            subCategory: subCategory,
+            duration: duration,
+            task: task
+        };
+
+        tableData.push(newRowData);
+
+        renderTable();
+
+        clearForm();
+
+        document.getElementById('start').disabled = false;
+        document.getElementById('start').style.backgroundColor = '#37ae29';
+        document.getElementById('start').style.color = 'white';
+    }
+
+    function renderTable() {
+        var tbody = document.getElementById('tbody');
+        tbody.innerHTML = '';
+
+        tableData.forEach(rowData => {
+            var newRow = `
+                <tr>
+                    <td>${rowData.category}</td>
+                    <td>${rowData.subCategory}</td>
+                    <td>${rowData.duration}</td>
+                    <td>${rowData.task}</td>
+                    <td>
+                        <div class="crud">
+                            <button id="delete" onclick="handleDelete(this)">Delete</button>
+                            <button id="edit" onclick="handleEdit(this)">Edit</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += newRow;
+        });
+    }
+
+    function clearForm() {
+        document.getElementById('sub-category').value = '';
+        document.getElementById('duration').value = '';
+        document.getElementById('task').value = '';
+        resetTimer();
+    }
+    let sec, min, hr;
+    let seconds = 0;
+    let minutes = 0;
+    let hours = 0;
+    let isRunning = false;
+
+    function watchFunction(event) {
+        var startButton = document.getElementById('start');
+        if (!isRunning) {
+            startButton.innerHTML = 'stop';
+            sec = setInterval(mySeconds, 1000);
+            min = setInterval(myMinutes, 60000);
+            hr = setInterval(myHours, 3600000);
+            isRunning = true;
+            startButton.style.backgroundColor = '#fc2121';
+        } else {
+            startButton.innerHTML = 'start';
+            clearInterval(sec);
+            clearInterval(min);
+            clearInterval(hr);
+            isRunning = false;
+            startButton.style.backgroundColor = '#37ae29';
+
+        }
+    }
+
+
+    function mySeconds() {
+        seconds++;
+        if (seconds >= 60) {
+            seconds = 0;
+        }
+        updateTime();
+    }
+
+    function myMinutes() {
+        minutes++;
+        if (minutes >= 60) {
+            minutes = 0;
+        }
+        updateTime();
+    }
+
+    function myHours() {
+        hours++;
+        if (hours >= 24) {
+            hours = 0;
+        }
+        updateTime();
+    }
+
+    function updateTime() {
+        let stopwatch = document.getElementById('timer');
+        let newtimer = `
+        ${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}
+    `;
+        stopwatch.innerHTML = newtimer;
+        timerValue = newtimer;
+    }
+
+    function resetTimer() {
+        document.getElementById('duration').value = timerValue;
+        clearInterval(sec);
+        clearInterval(min);
+        clearInterval(hr);
+        seconds = 0;
+        minutes = 0;
+        hours = 0;
+        updateTime();
+        document.getElementById('start').innerHTML = 'start';
+        isRunning = false;
+        document.getElementById('start').disabled = true;
+        document.getElementById('start').style.backgroundColor = '#36ae297e';
+        document.getElementById('start').style.color = '#ffffff79';
+    }
+
+
+    function filterFunction() {
+        var filterValue = document.getElementById('filter').value;
+        var rows = document.querySelectorAll('.table tbody tr');
+
+        rows.forEach(row => {
+            var categoryCell = row.querySelector('td:nth-child(1)').textContent.trim();
+            if (filterValue === 'All' || categoryCell === filterValue) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function handleDelete(element) {
+        var row = element.closest('tr');
+        var index = Array.from(row.parentNode.children).indexOf(row);
+        tableData.splice(index, 1);
+        row.parentNode.removeChild(row);
+        event.preventDefault();
+    }
+
+    function handleEdit(element) {
+        var row = element.closest('tr');
+        var cells = row.cells;
+        var currentCategory = cells[0].textContent;
+        var currentSubCategory = cells[1].textContent;
+        var currentDuration = cells[2].textContent;
+        var currentTask = cells[3].textContent;
+
+        document.getElementById('editButton').style.display = '';
+        document.getElementById('select').value = currentCategory;
+        document.getElementById('sub-category').value = currentSubCategory;
+        document.getElementById('duration').value = currentDuration;
+        document.getElementById('task').value = currentTask;
+
+        document.getElementById('editButton').onclick = function (event) {
+            event.preventDefault();
+
+            var updatedCategory = document.getElementById('select').value;
+            var updatedSubCategory = document.getElementById('sub-category').value;
+            var updatedDuration = document.getElementById('duration').value;
+            var updatedTask = document.getElementById('task').value;
+
+            cells[0].textContent = updatedCategory;
+            cells[1].textContent = updatedSubCategory;
+            cells[2].textContent = updatedDuration;
+            cells[3].textContent = updatedTask;
+
+            clearForm();
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('form').onsubmit = handleSubmit;
+            document.getElementById('start').disabled = false;
+            document.getElementById('start').style.backgroundColor = '#37ae29';
+            document.getElementById('start').style.color = 'white';
+        };
+    }
+
+
+    function updateSubmit(event, row) {
+        event.preventDefault();
+
+        var updatedCategory = document.getElementById('select').value;
+        var updatedSubCategory = document.getElementById('sub-category').value;
+        var updatedDuration = document.getElementById('duration').value;
+        var updatedTask = document.getElementById('task').value;
+
+        row.cells[0].textContent = updatedCategory;
+        row.cells[1].textContent = updatedSubCategory;
+        row.cells[2].textContent = updatedDuration;
+        row.cells[3].textContent = updatedTask;
+
+        clearForm();
+    }
+
+
+
+
+</script>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+    html {
+        background-color: rgb(25, 25, 29);
+        font-family: "Poppins", sans-serif;
+        letter-spacing: 1px;
+    }
+
+    button {
+        letter-spacing: 1px;
+    }
+    input {
+        letter-spacing: 1px;
+    }
+    select {
+        letter-spacing: 1px;
+    }
+    option {
+        letter-spacing: 1px;
+    }
+
+    .crud {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        align-items: center;
+        padding: 5px;
+        gap: 10px;
+    }
+
+    .stopwatch {
+        display: flex;
+        gap: 20px;
+    }
+
+    .inner-body {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 0;
+        color: white;
+    }
+
+    header {
+        background-color: rgba(0, 0, 0, 0.267);
+        border-bottom: 2px solid black;
+        justify-content: center;
+        display: flex;
+        font-weight: 600;
+        font-size: 25px;
+        p {
+            margin: 15px;
+        }
+    }
+
+    .body {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 90vh;
+        flex-wrap: wrap;
+        padding: 100px 40px;
+    }
+
+    form {
+        background-color: rgba(0, 0, 0, 0.267);
+        font-size: 25px;
+        border: 2px solid black;
+        border-radius: 10px;
+        backdrop-filter: blur(20px);
+        padding: 50px 40px;
+    }
+
+    .inner-form {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 40px;
+        gap: 10px;
+        width: 400px;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 60px;
+    }
+
+    .crud button {
+        padding: 5px 10px;
+        font-weight: 600;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .crud #delete {
+        background-color: #fc2121;
+    }
+
+    .crud #edit {
+        width: 60px;
+        background-color: #0f779a;
+    }
+
+    .stopwatch {
+        margin-left: 50px;
+    }
+
+    .buttons button {
+        font-size: 17px;
+        border: .5px solid black;
+        width: 120px;
+        height: 50px;
+        background-color: rgba(31, 31, 31, 0.474);
+        color: white;
+        border-radius: 4px;
+    }
+
+    input {
+        background-color: rgb(31, 31, 31);
+        border: none;
+        font-size: 25px;
+        color: white;
+        padding: 5px;
+        outline: none;
+    }
+
+    .input {
+        background-color: transparent;
+        border-bottom: 1.5px solid rgb(56, 56, 56);
+        font-weight: 400;
+    }
+
+    select {
+        background-color: rgba(31, 31, 31, 0.416);
+        border: none;
+        padding: 5px;
+        font-size: 25px;
+        color: white;
+    }
+
+    option {
+        font-size: 20px;
+        border-radius: none;
+        border: none;
+    }
+
+    .table {
+        background-color: rgba(0, 0, 0, 0.267);
+        border: 2px solid black;
+        text-align: center;
+        font-size: 20px;
+        border-collapse: collapse;
+        border-radius: 5px;
+    }
+
+    .table tr {
+        border-bottom: 1px solid rgb(67, 67, 67);
+    }
+
+    .table td {
+        font-weight: 400;
+    }
+
+    .table th {
+        font-weight: 500;
+        padding: 20px;
+        font-size: 25px;
+        color: white;
+        width: 400px;
+    }
+
+    .stopwatch button {
+        width: 70px;
+    }
+
+    #start {
+        background-color: #37ae29;
+        color: white;
+        font-size: 18px;
+        border: none;
+        font-weight: 500;
+        border-radius: 4px;
+    }
+
+    #end {
+        background-color: rgb(64, 64, 64);
+        color: white;
+        font-size: 18px;
+        border: none;
+        font-weight: 500;
+        border-radius: 4px;
+    }
+</style>
+
+</html>
