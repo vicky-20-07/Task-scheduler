@@ -13,44 +13,7 @@
             <p>TASK SCHEDULER</p>
         </header>
         <div class="body">
-            <div>
-                <form id="form">
-                    <div class="form">
-                        <div class="inner-form">
-                            <label for="select">Category</label>
-                            <select id="select">
-                                <option value="Work">Work</option>
-                                <option value="Personal space">Personal space</option>
-                            </select>
-                        </div>
-                        <div class="inner-form">
-                            <label for="sub-category">Sub-category</label>
-                            <input class="input" type="text" id="sub-category">
-                        </div>
-                        <div class="inner-form">
-                            <label for="duration">Duration</label>
-                            <input type="text" id="duration" style="display: none;" required>
-                            <div class="stopwatch">
-                                <div id="timer">00 : 00 : 00</div>
-                                <button id="start" type="button" onclick="watchFunction(event)">start</button>
-                                <button id="end" onclick="resetTimer()" type="button">end</button>
-                            </div>
-                        </div>
-                        <div class="inner-form">
-                            <label for="task">Task</label>
-                            <input class="input" type="text" id="task">
-                        </div>
-                    </div>
-
-                    <div class="buttons">
-                        <button type="button" onclick="handleSubmit()">Add task</button>
-                        <button id="editButton" type="button" style="display: none;"
-                            onclick="updateSubmit()">Edit</button>
-                        <button type="button" onclick="clearForm()">Clear</button>
-                    </div>
-                </form>
-            </div>
-            <div>
+            <div class="table-container">
                 <div style="margin: 0 0 20px 20px;">
                     <select id="filter" style="height: 50px; margin-top: 20px;" onchange="filterFunction()">
                         <option value="All">All</option>
@@ -76,6 +39,45 @@
                         <td>-</td>
                     </tbody>
                 </table>
+            </div>
+            <div>
+                <form id="form">
+                    <div class="form">
+                        <div class="inner-form">
+                            <label for="select">Category</label>
+                            <select id="select">
+                                <option value="Work">Work</option>
+                                <option value="Personal space">Personal space</option>
+                            </select>
+                        </div>
+                        <div class="inner-form">
+                            <label for="sub-category">Sub-category</label>
+                            <input class="input" type="text" id="sub-category">
+                        </div>
+                        <div class="inner-form">
+                            <label for="duration">Duration</label>
+                            <input type="text" id="duration" style="display: none;" required>
+                            <div class="stopwatch">
+                                <div id="timer">00 : 00 : 00</div>
+                                <div class="stopButtons">
+                                    <button id="start" type="button" onclick="watchFunction(event)">start</button>
+                                    <button id="end" onclick="resetTimer()" type="button">end</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inner-form">
+                            <label for="task">Task</label>
+                            <input class="input" type="text" id="task">
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="button" onclick="handleSubmit()">Add task</button>
+                        <button id="editButton" type="button" style="display: none;"
+                            onclick="updateSubmit()">Edit</button>
+                        <button type="button" onclick="clearForm()">Clear</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -318,14 +320,21 @@
     button {
         letter-spacing: 1px;
     }
+
     input {
         letter-spacing: 1px;
     }
+
     select {
         letter-spacing: 1px;
     }
+
     option {
         letter-spacing: 1px;
+    }
+
+    .table-container {
+        margin-top: -20px;
     }
 
     .crud {
@@ -340,7 +349,8 @@
 
     .stopwatch {
         display: flex;
-        gap: 20px;
+        justify-content: space-between;
+        padding: 0 40px;
     }
 
     .inner-body {
@@ -358,6 +368,7 @@
         display: flex;
         font-weight: 600;
         font-size: 25px;
+
         p {
             margin: 15px;
         }
@@ -365,16 +376,15 @@
 
     .body {
         display: flex;
-        justify-content: space-around;
-        align-items: center;
+        justify-content: space-between;
         height: 90vh;
         flex-wrap: wrap;
-        padding: 100px 40px;
+        padding: 100px 50px;
     }
 
     form {
         background-color: rgba(0, 0, 0, 0.267);
-        font-size: 25px;
+        font-size: 18px;
         border: 2px solid black;
         border-radius: 10px;
         backdrop-filter: blur(20px);
@@ -414,7 +424,8 @@
     }
 
     .stopwatch {
-        margin-left: 50px;
+        /* margin-left: 50px; */
+        font-size: 25px;
     }
 
     .buttons button {
@@ -430,7 +441,7 @@
     input {
         background-color: rgb(31, 31, 31);
         border: none;
-        font-size: 25px;
+        font-size: 18px;
         color: white;
         padding: 5px;
         outline: none;
@@ -446,7 +457,7 @@
         background-color: rgba(31, 31, 31, 0.416);
         border: none;
         padding: 5px;
-        font-size: 25px;
+        font-size: 18px;
         color: white;
     }
 
@@ -460,7 +471,7 @@
         background-color: rgba(0, 0, 0, 0.267);
         border: 2px solid black;
         text-align: center;
-        font-size: 20px;
+        font-size: 18px;
         border-collapse: collapse;
         border-radius: 5px;
     }
@@ -471,18 +482,19 @@
 
     .table td {
         font-weight: 400;
+        font-size: 15px;
     }
 
     .table th {
         font-weight: 500;
         padding: 20px;
-        font-size: 25px;
+        font-size: 20px;
         color: white;
-        width: 400px;
     }
 
-    .stopwatch button {
+    .stopButtons button {
         width: 70px;
+        height: 35px;
     }
 
     #start {
